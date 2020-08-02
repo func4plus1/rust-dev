@@ -1,0 +1,30 @@
+FROM alpine:3.12.0  
+ 
+ARG WORKSPACE=/root 
+
+
+#RUN apt-get update 
+#RUN apt-get install software-properties-common -y
+
+RUN apk add --no-cache git
+
+RUN git config --global user.name "John Doe"
+RUN git config --global user.email johndoe@example.com
+
+
+RUN apk add wget
+RUN apk add zsh
+RUN sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+RUN apk add vim
+RUN apk add --update nodejs npm
+RUN apk add --no-cache  curl
+RUN apk --no-cache --update add build-base
+
+RUN curl https://sh.rustup.rs -sSf | zsh -s -- -y 
+
+WORKDIR $WORKSPACE
+COPY .vimrc ${WORKSPACE}/.vimrc 
+COPY plug.vim ${WORKSPACE}/.vim/autoload/plug.vim
+
+CMD ["zsh", "-c", "source $HOME/.cargo/env"]
