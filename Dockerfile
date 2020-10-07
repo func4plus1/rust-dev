@@ -1,30 +1,22 @@
-FROM alpine:3.12.0  
+FROM rust:1.46-buster 
  
 ARG WORKSPACE=/root 
 
-
-#RUN apt-get update 
-#RUN apt-get install software-properties-common -y
-
-RUN apk add --no-cache git
-
+RUN apt update && apt install software-properties-common git wget vim zsh -y
 RUN git config --global user.name "John Doe"
 RUN git config --global user.email johndoe@example.com
 
+RUN curl -sL https://deb.nodesource.com/setup_12.x | bash
+RUN apt-get install nodejs -y
 
-RUN apk add wget
-RUN apk add zsh
-RUN sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+RUN ["apt-get", "install", "-y", "zsh"]
+RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
 
-RUN apk add vim
-RUN apk add --update nodejs npm
-RUN apk add --no-cache  curl
-RUN apk --no-cache --update add build-base
 
-RUN curl https://sh.rustup.rs -sSf | zsh -s -- -y 
+RUN cargo install mdbook
 
 WORKDIR $WORKSPACE
 COPY .vimrc ${WORKSPACE}/.vimrc 
 COPY plug.vim ${WORKSPACE}/.vim/autoload/plug.vim
 
-CMD ["zsh", "-c", "source $HOME/.cargo/env"]
+CMD ["zsh"] 
